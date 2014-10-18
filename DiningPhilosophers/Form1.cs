@@ -28,35 +28,35 @@ namespace DiningPhilosophers
             var bw = new BackgroundWorker();
             bw.DoWork += new DoWorkEventHandler(delegate(object o, DoWorkEventArgs args)
             {
-                    Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
-                                    {
-                                            while(cont)//continue until user ends the program
-                                                    {
-                                                            var nums = new Queue<int>();
-                                                            lock(r)//get 2 random numbers for time to wait
-                                                                    {
-                                                                            nums.Enqueue(r.Next(0, 10000));
-                                                                            nums.Enqueue(r.Next(1000, 10000));
-                                                                    }
-                                                            if (nums.Count() < 2)//if unable to get random numbers skip this code
-                                                                    {
-                                                                            System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
-                                                                            lock(forks.ElementAt(phil.leftFork))
-                                                                                    {
-                                                                                            lock(forks.ElementAt(phil.rightFork))
-                                                                                                    {
-                                                                                                            MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
-                                                                                                            System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
-                                                                                                            System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
-                                                                                                    }
-                                                                                    }
-                                                                    }
-                                                            
-                                                    }
-                                    });});
+                Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
+                {
+                    while(cont)//continue until user ends the program
+                    {
+                        var nums = new Queue<int>();
+                        lock(r)//get 2 random numbers for time to wait
+                        {
+                            nums.Enqueue(r.Next(0, 10000));
+                            nums.Enqueue(r.Next(1000, 10000));
+                        }
+                        if (nums.Count() < 2)//if unable to get random numbers skip this code
+                        {
+                            System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
+                            lock(forks.ElementAt(phil.leftFork))
+                            {
+                                lock(forks.ElementAt(phil.rightFork))
+                                {
+                                    MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                    System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                    System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
+                                }
+                            }
+                        }
+                    }
+                });});
             bw.RunWorkerAsync();
         }
     }
+
     public class Philosopher
     {
             public int seat, rightFork, leftFork;
