@@ -18,33 +18,43 @@ namespace DiningPhilosophers
         public Form1()
         {
             InitializeComponent();
+            cont = true;
+            //forks are used to prevent access by multiple threads
             forks = new List<Object>(NUM_PHIL);
             var philosophers = new List<Philosopher>();
-            for (int i =0; i< NUM_PHIL; i++)
+            for (int i =0; i< NUM_PHIL; i++)//
                     philosophers.Add(new Philosopher(i, NUM_PHIL));
-            var r = new Random();
-            Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
-                    {
-                            while(cont)//continue until user ends the program
+            var r = new Random();//create random number generator
+            var bw = new BackgroundWorker();
+            bw.DoWork += new DoWorkEventHandler(delegate(object o, DoWorkEventArgs args)
+            {
+                    Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
                                     {
-                                            var nums = new Queue<int>();
-                                            lock(r)
-                                            {
-                                                    nums.Enqueue(r.Next(0, 10000));
-                                                    nums.Enqueue(r.Next(1000, 10000));
-                                            }
-                                            System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
-                                            lock(forks.ElementAt(phil.leftFork))
+                                            while(cont)//continue until user ends the program
                                                     {
-                                                            lock(forks.ElementAt(phil.rightFork))
+                                                            var nums = new Queue<int>();
+                                                            lock(r)//get 2 random numbers for time to wait
                                                                     {
-                                                                            System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
-                                                                            System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
+                                                                            nums.Enqueue(r.Next(0, 10000));
+                                                                            nums.Enqueue(r.Next(1000, 10000));
                                                                     }
+                                                            if (nums.Count() < 2)//if unable to get random numbers skip this code
+                                                                    {
+                                                                            System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
+                                                                            lock(forks.ElementAt(phil.leftFork))
+                                                                                    {
+                                                                                            lock(forks.ElementAt(phil.rightFork))
+                                                                                                    {
+                                                                                                            MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                                                                                            System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                                                                                            System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
+                                                                                                    }
+                                                                                    }
+                                                                    }
+                                                            
                                                     }
-                                            
-                                    }
-                    });
+                                    });});
+            bw.RunWorkerAsync();
         }
     }
     public class Philosopher
