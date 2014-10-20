@@ -1,1 +1,9 @@
 C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\bin\Debug\DiningPhilosophers.exe.config
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.exe
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.csprojResolveAssemblyReference.cache
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.Properties.Resources.resources
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.csproj.GenerateResource.Cache
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\bin\Debug\DiningPhilosophers.exe
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\bin\Debug\DiningPhilosophers.pdb
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.pdb
+C:\Users\Adam\Google Drive\ITCS 3146\DiningPhilosophers\DiningPhilosophers\obj\Debug\DiningPhilosophers.Form1.resources

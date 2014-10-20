@@ -14,46 +14,69 @@ namespace DiningPhilosophers
     {
         public const int NUM_PHIL = 5;
         public List<Object> forks;
+        private List<Philosopher> philosophers;
+        private List<Label> labels;
         private bool cont;
+        private Random r;
         public Form1()
         {
             InitializeComponent();
             cont = true;
             //forks are used to prevent access by multiple threads
-            forks = new List<Object>(NUM_PHIL);
-            var philosophers = new List<Philosopher>();
+            forks = new List<Object>();
+            labels = new List<Label>();
+            labels.Add(phil1);
+            labels.Add(phil2);
+            labels.Add(phil3);
+            labels.Add(phil4);
+            labels.Add(phil5);
+            for (int i = 0; i < NUM_PHIL; i++)
+                forks.Add(new Object());
+            philosophers = new List<Philosopher>();
             for (int i =0; i< NUM_PHIL; i++)//
                     philosophers.Add(new Philosopher(i, NUM_PHIL));
-            var r = new Random();//create random number generator
+            r = new Random();//create random number generator
             var bw = new BackgroundWorker();
-            bw.DoWork += new DoWorkEventHandler(delegate(object o, DoWorkEventArgs args)
-            {
-                Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
-                {
-                    while(cont)//continue until user ends the program
+            bw.DoWork += new DoWorkEventHandler(delegate(object o, DoWorkEventArgs args) { Eat(); });
+            bw.RunWorkerAsync();
+        }
+        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e )
+        {
+            
+        }
+        public void Eat()
+        {
+            Parallel.ForEach(philosophers, phil  =>//runs each philiosopher in his own thread
                     {
-                        var nums = new Queue<int>();
-                        lock(r)//get 2 random numbers for time to wait
+                        while(cont)//continue until user ends the program
                         {
-                            nums.Enqueue(r.Next(0, 10000));
-                            nums.Enqueue(r.Next(1000, 10000));
-                        }
-                        if (nums.Count() < 2)//if unable to get random numbers skip this code
-                        {
-                            System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
-                            lock(forks.ElementAt(phil.leftFork))
+                            var thisLabel = labels.ElementAt(phil.seat);
+                            thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is thinking", phil.seat)));
+                            var nums = new Queue<int>();
+                            lock(r)//get 2 random numbers for time to wait
                             {
+                                nums.Enqueue(r.Next(0, 10000));
+                                nums.Enqueue(r.Next(1000, 10000));
+                            }
+                            if (nums.Count() == 2)//if unable to get random numbers skip this code
+                            {
+                                System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
+                                thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is hungry", phil.seat)));
+                                lock(forks.ElementAt(phil.leftFork))
+                            {
+                                thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} grabs fork {1}", phil.seat, phil.leftFork)));
                                 lock(forks.ElementAt(phil.rightFork))
                                 {
-                                    MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} grabs fork {1}", phil.seat, phil.rightFork)));
+                                    //MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is Eating", phil.seat)));
                                     System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
                                     System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
                                 }
                             }
                         }
                     }
-                });});
-            bw.RunWorkerAsync();
+                });
         }
     }
 
@@ -68,7 +91,7 @@ namespace DiningPhilosophers
             {
                     this.seat = seat;
                     rightFork = seat;
-                    leftFork = seat % num_phil + 1;
+                    leftFork = (seat + 1) % num_phil;
                     hasLeft = false;
                     hasRight = false;
                     status = "Thinking";
