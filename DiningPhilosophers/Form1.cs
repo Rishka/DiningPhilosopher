@@ -17,6 +17,7 @@ namespace DiningPhilosophers
         private List<Philosopher> philosophers;
         private List<Label> labels;
         private bool cont;
+        private List<CheckBox> Forks;
         private Random r;
         public Form1()
         {
@@ -25,6 +26,12 @@ namespace DiningPhilosophers
             //forks are used to prevent access by multiple threads
             forks = new List<Object>();
             labels = new List<Label>();
+            Forks = new List<CheckBox>();
+            Forks.Add(this.Fork1);
+            Forks.Add(Fork2);
+            Forks.Add(Fork3);
+            Forks.Add(Fork4);
+            Forks.Add(Fork5);
             labels.Add(phil1);
             labels.Add(phil2);
             labels.Add(phil3);
@@ -51,7 +58,9 @@ namespace DiningPhilosophers
                         while(cont)//continue until user ends the program
                         {
                             var thisLabel = labels.ElementAt(phil.seat);
-                            thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is thinking", phil.seat)));
+                            var leftFork = Forks.ElementAt(phil.leftFork);
+                            var rightFork = Forks.ElementAt(phil.rightFork);
+                            thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text  = "Thinking..."));
                             var nums = new Queue<int>();
                             lock(r)//get 2 random numbers for time to wait
                             {
@@ -61,22 +70,71 @@ namespace DiningPhilosophers
                             if (nums.Count() == 2)//if unable to get random numbers skip this code
                             {
                                 System.Threading.Thread.Sleep(nums.Dequeue());//Think from 0 to 10 seconds
-                                thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is hungry", phil.seat)));
+                                thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = "Hungry"));
+                                System.Threading.Thread.Sleep(1000);//sleep for a second so you can see what is going on
                                 lock(forks.ElementAt(phil.leftFork))
-                            {
-                                thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} grabs fork {1}", phil.seat, phil.leftFork)));
-                                lock(forks.ElementAt(phil.rightFork))
                                 {
-                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} grabs fork {1}", phil.seat, phil.rightFork)));
-                                    //MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
-                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Philosopher {0} is Eating", phil.seat)));
-                                    System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
-                                    System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
+                                    
+                                    leftFork.Invoke((MethodInvoker)(() =>leftFork.Text = String.Format("Fork {0}: Picked up by Philosopher {1}", phil.leftFork + 1, phil.seat +1 )));
+                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Grabs fork {0}",  phil.leftFork + 1)));
+                                    leftFork.Invoke((MethodInvoker)(() =>leftFork.Checked = true));
+                                    System.Threading.Thread.Sleep(1000);//sleep for a second so you can see what is going on
+                                    lock(forks.ElementAt(phil.rightFork))
+                                    {
+                                        rightFork.Invoke((MethodInvoker)(() =>rightFork.Text = String.Format("Fork {0}: Picked up by Philosopher {1}", phil.rightFork + 1, phil.seat+ 1)));
+                                        rightFork.Invoke((MethodInvoker)(() =>rightFork.Checked = true));
+                                        thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Grabs fork {0}", phil.rightFork+1)));
+                                        //MessageBox.Show("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                        System.Threading.Thread.Sleep(1000);//sleep for a second so you can see what is going on
+                                        thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = " Eating"));
+                                        System.Diagnostics.Debug.Write("Philosopher {0} is eating\n" , phil.seat.ToString());
+                                        System.Threading.Thread.Sleep(nums.Dequeue()); //Eat for up to 10 sec
+                                        thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = "Full"));
+                                        rightFork.Invoke((MethodInvoker)(() =>rightFork.Text = String.Format("Fork {0}: Put down by Philosopher {1}", phil.rightFork + 1, phil.seat+ 1)));
+                                        rightFork.Invoke((MethodInvoker)(() =>rightFork.Checked = false));
+                                        System.Threading.Thread.Sleep(1000);//sleep for a second so you can see what is going on
+
+                                        
+                                    }
+                                    leftFork.Invoke((MethodInvoker)(() =>leftFork.Text = String.Format("Fork {0}: Put down by Philosopher {1}", phil.leftFork + 1, phil.seat +1 )));
+                                    thisLabel.Invoke((MethodInvoker)(() => thisLabel.Text = String.Format("Puts down fork {0}",  phil.leftFork + 1)));
+                                    leftFork.Invoke((MethodInvoker)(() =>leftFork.Checked = false));
+                                    System.Threading.Thread.Sleep(1000);//sleep for a second so you can see what is going on
                                 }
                             }
                         }
-                    }
-                });
+                    });
+        }
+    
+
+        private void Philosoper3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Fork1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void startButton_Click(object sender, EventArgs e)
+        {
+            cont = true;
+        }
+
+        private void endButton_Click(object sender, EventArgs e)
+        {
+            cont = false;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 
